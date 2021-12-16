@@ -152,7 +152,7 @@ function draw(){
     grupoNuvens.setLifetimeEach(-1);
 
      //Resetar o jogo
-     if(mousePressedOver(reiniciar)||touches.length>0){
+     if(mousePressedOver(reiniciar)){
       console.log("reiniciar o jogo")
       reset();
     }

@@ -1,214 +1,202 @@
-var trex, trex_correndo, trex_colidiu;
 
-var solo, soloinvisivel, imagemdosolo;
-
-var rand, nuvem, imagemdanuvem, grupoNuvens;
-
-var obstaculo, obstaculo1, obstaculo2, obstaculo3, obstaculo4, obstaculo5, obstaculo6, grupoObstaculos;
-
+var trex ,trexCorrendo, trex_colidiu;
+var solo, soloImagem, soloInvisivel;
+var nuvem, imagemdanuvem;
+var obstaculo, obstaculo1, obstaculo2, obstaculo3, obstaculo4, obstaculo5, obstaculo6;
 var pontuacao=0;
-
+var grupoNuvens, grupoCactos;
+var estadoJogo = "JOGAR"
 var reiniciar, restarImg, fimJogo, gameOver;
 
+/* várias maneiras de fazer
 var JOGAR = 1;
 var ENCERRAR = 0;
 var estadoJogo = JOGAR;
+*/
 
 function preload(){
-  trex_correndo = loadAnimation("trex1.png","trex2.png","trex3.png");
+  
+  trexCorrendo = loadAnimation("trex1.png", "trex3.png", "trex4.png");
   trex_colidiu = loadImage("trex_collided.png");
-  
-  imagemdosolo = loadImage("ground2.png");
-  
+
+  soloImagem = loadImage("ground2.png")
   imagemdanuvem = loadImage("cloud.png");
-  
+
   obstaculo1 = loadImage("obstacle1.png");
   obstaculo2 = loadImage("obstacle2.png");
   obstaculo3 = loadImage("obstacle3.png");
   obstaculo4 = loadImage("obstacle4.png");
   obstaculo5 = loadImage("obstacle5.png");
   obstaculo6 = loadImage("obstacle6.png");
-  
+
   restartImg = loadImage("restart.png");
   gameOver = loadImage("finalJogo.PNG");
-  
+
   somPulo = loadSound("mario-jump.mp3");
   somCheck = loadSound("mario-powerup.mp3");
   somMorte = loadSound("mario-death.mp3");
-  
 }
 
-function setup() {
-
-  createCanvas(windowWidth, 200)
+function setup(){
+  createCanvas(windowWidth,200)
   
-  //criar um sprite do trex
-  trex = createSprite(width/20,height-100,30,50);
-  trex.addAnimation("running", trex_correndo); 
-  trex.addAnimation("collided" , trex_colidiu)
-  trex.scale = 0.5;
-  
-  //criar um sprite do solo
+  //crie um sprite de trex
+  trex = createSprite(width/20,height-110,30,50);
+  trex.addAnimation("running", trexCorrendo);
+  trex.addImage("collided" , trex_colidiu);
+  trex.scale = 0.5
+  trex.x = 40;
+ 
+  //criação chão
   solo = createSprite(200,height-10,width,20);
-  solo.addImage("ground",imagemdosolo);
-  solo.x = solo.width /2;
-  
+  //solo = createSprite(200,180,600,20);
+  solo.addImage("solo",soloImagem)
 
-  //creating invisible ground
-  soloinvisivel = createSprite(100, height-2,width,20);
-  soloinvisivel.visible = false;
-  
-  //Creando grupos
-  grupoNuvens = new Group();
-  grupoObstaculos = new Group();
-  
-  //criar um raio colisor
-  trex.setCollider("circle",0,0,40);
-  //trex.debug = true
-  
+  //chão Invisivel
+  soloInvisivel = createSprite(100, height-2,width,20);
+  soloInvisivel.visible = false
+
   //criar fim do jogo
-  fimJogo= createSprite(width/2,90);
+  fimJogo= createSprite(width/2,height/2);
   fimJogo.addImage(gameOver);
   fimJogo.scale = 0.3;
   
   //criar reiniciar
-  reiniciar = createSprite(width/2,140);
+  reiniciar = createSprite(width/2,height/2+50);
   reiniciar.addImage(restartImg);
   reiniciar.scale = 0.5;
   
   //deixar imagens de fim invisiveis
   fimJogo.visible = false;
   reiniciar.visible = false;
+
   
+  //Criando grupos
+  grupoNuvens = new Group();
+  grupoCactos = new Group();
+  
+  trex.debug = false
+  trex.setCollider("rectangle", 60,0,100,250,90);
+  //setCollider(type, xOffset, yOffset, width/radius, height, rotationOffset)
+
 }
 
+function draw(){
 
-function draw() {
-  //definir cor de fundo
-  background("white");
+  //usados no jogo todo
+  background("white")
+
+  text("Pontuação: "+ pontuacao, width-150,15);
+
+  //som do checkpoint 
+  if(pontuacao >0 && pontuacao %100 === 0){
+    somCheck.play();
+  }
+  //colisao com chão
+  trex.collide(soloInvisivel)
+  console.log("estado do jogo: ", estadoJogo)
+
+  drawSprites();
   
-  //Inseir texto pontução na tela
-  text("Pontuação: "+ pontuacao, width/20,15);
-  
-  //impedir o trex de cair 
-  trex.collide(soloinvisivel);
-  
-  //Separar os estados dos jogos
-  //Estado do Jogo = jogar
-  if(estadoJogo === JOGAR){
+  //usados no JOGAR
+  if(estadoJogo === "JOGAR"){
     
-    solo.velocityX = -(4+3*pontuacao/100);
-    
-    //mostrar pontução na tela
-    fill("white");
+    //Inseir pontução na tela
     pontuacao = pontuacao + Math.round(getFrameRate()/60);
-    
-    //som do checkpoint 
-    if(pontuacao >0 && pontuacao %100 === 0){
-      somCheck.play();
-    }
-    
-    // pular quando a tecla espaço é acionada
-    if(touches.length > 0 || keyDown("space")&& trex.y >= 100) {
+
+    //Pulo do Trex
+    if(touches.length > 0 || keyDown("space")&& trex.y >= height-100) {
       trex.velocityY = -10;
       somPulo.play();//som do salto
       touches = [];
     }
-    trex.velocityY = trex.velocityY + 0.8
-  
-    //movimentaçao solo
-    if (solo.x < 0){
-      solo.x = solo.width;
-      solo.x = solo.width /2;
-      
+    //gravidade
+    trex.velocityY = trex.velocityY +0.8;
+
+    //Movimento do solo
+    solo.velocityX = -(4+3*pontuacao/100);
+
+    if(solo.x<0){
+      solo.x = solo.width/2;
     }
-    
-    //chamada de funções
-    gerarNuvens();
+
+    //chamada funções
+    gerarNuvens()
     gerarObstaculos();
-    
-    //mudar o estado do jogo quando toca obstaculos
-    if(grupoObstaculos.isTouching(trex)){
-      estadoJogo = ENCERRAR
-      trex.velocityY  = 0;
-      somMorte.play();//som da morte
+
+    //condição de mudança de estado do jogo
+    if(trex.isTouching(grupoCactos)){
+      trex.velocityY = -12;
+      //estadoJogo = "ENCERRAR"
+      //som da morte
+      //somMorte.play();
     }
-    
-  //Estado do Jogo = encerrar
-  }else if (estadoJogo === ENCERRAR){
-    
-    //parar velocidade do chão
+  }
+
+  //usados no ENCERRAR
+  else if (estadoJogo === "ENCERRAR"){
     solo.velocityX = 0;
     trex.velocityX = 0;
+    trex.velocityY = 0;
+    //altera a animação do Trex
+    trex.changeAnimation("collided", trex_colidiu);
     
     //deixar imagens de fim visiveis
     fimJogo.visible = true;
     reiniciar.visible = true;
     
-    //altera a animação do Trex
-    trex.changeAnimation("collided", trex_colidiu);
-    
-    //Não deixar os obstáculos sumirem quando colidir
-    grupoObstaculos.setLifetimeEach(-1);
-    grupoNuvens.setLifetimeEach(-1);
-    
-    //Velocidade pára quando colide
-    grupoObstaculos.setVelocityXEach(0);
+    grupoCactos.setVelocityXEach(0);
     grupoNuvens.setVelocityXEach(0);
-    
-    //Resetar o jogo
-    if(mousePressedOver(reiniciar)){
+
+    grupoCactos.setLifetimeEach(-1);
+    grupoNuvens.setLifetimeEach(-1);
+
+     //Resetar o jogo
+     if(mousePressedOver(reiniciar)||touches.length>0){
       console.log("reiniciar o jogo")
       reset();
     }
   }
   
-  drawSprites();
 }
 
-//Funções do jogo
-
+//funções
 //Reiniciar o jogo
 function reset(){
-  estadoJogo = JOGAR;
+  console.log("funcao")
+  estadoJogo = "JOGAR";
   fimJogo.visible = false;
   reiniciar.visible = false;
-  grupoObstaculos.destroyEach();
+  grupoCactos.destroyEach();
   grupoNuvens.destroyEach();
-  trex.changeAnimation("running", trex_correndo);
+  trex.changeAnimation("running", trexCorrendo);
   pontuacao=0;
 }
 
-//Criar nuvens
 function gerarNuvens(){
   if(frameCount % 60 === 0) {
-    //cria nuvem aleatoriamente com escala e velocidade
     nuvem = createSprite(width-50,100,40,10);
-    nuvem.addImage("Nuvem",imagemdanuvem);
-    nuvem.y = Math.round(random(10,90));
-    nuvem.scale = 0.4;
+    nuvem.addImage("Muven",imagemdanuvem);
+    nuvem.y = Math.round(random(10,100));
+    nuvem.scale = 0.5;
     nuvem.velocityX = -3;
-    
-    //coloca nuvem atras do Trex
     nuvem.depth = trex.depth
-    trex.depth = trex.depth + 1;// de todas
-    
-    //tempo de vida para nuvem
+    trex.depth++
+
+    //tempo de vida para nuvens
     nuvem.lifetime = width/30;
-    
-    //adicionar nuvens ao grupo
-    grupoNuvens.add(nuvem);
+
+    grupoNuvens.add(nuvem)
   }
-}
   
-//Criar Obstáculos
+}
+
 function gerarObstaculos(){
   //gerar obstaculos a cada 60 quadros
   if (frameCount % 60 === 0){
    var obstaculo = createSprite(width-50,height-25,10,40);
-    obstaculo.velocityX = -(6+pontuacao/100);
-   
-    
+   obstaculo.velocityX = -(6+pontuacao/100);
+   obstaculo.scale = 0.5;
     //gerar obstaculos aleatoriamente
     var rand = Math.round(random(1,6));
     switch(rand) {
@@ -232,12 +220,9 @@ function gerarObstaculos(){
     trex.depth = trex.depth + 1;// de todas
     
     //tempo de vida para obstaculo
-    obstaculo.scale = 0.5;
     obstaculo.lifetime = width/30;
-    
-    //adicionar obstáculos ao grupo
-    grupoObstaculos.add(obstaculo);
+
+    grupoCactos.add(obstaculo)
   }
   
 }
-

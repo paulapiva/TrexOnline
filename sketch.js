@@ -43,7 +43,6 @@ function setup(){
  
   //criação chão
   solo = createSprite(200,height-10,width,20);
-  //solo = createSprite(200,180,600,20);
   solo.addImage("solo",soloImagem)
 
   //chão Invisivel
@@ -70,7 +69,8 @@ function setup(){
   grupoCactos = new Group();
   
   trex.debug = false
-  trex.setCollider("rectangle", 60,0,100,250,90);
+  trex.setCollider("circle",0,0,40);
+  //trex.setCollider("rectangle", 60,0,100,250,90);
   //setCollider(type, xOffset, yOffset, width/radius, height, rotationOffset)
 
 }
@@ -120,10 +120,10 @@ function draw(){
 
     //condição de mudança de estado do jogo
     if(trex.isTouching(grupoCactos)){
-      trex.velocityY = -12;
-      //estadoJogo = "ENCERRAR"
+      //trex.velocityY = -12;
+      estadoJogo = "ENCERRAR"
       //som da morte
-      //somMorte.play();
+      somMorte.play();
     }
   }
 
@@ -178,7 +178,7 @@ function gerarNuvens(){
     trex.depth++
 
     //tempo de vida para nuvens
-    nuvem.lifetime = width/30;
+    nuvem.lifetime = width+30;
 
     grupoNuvens.add(nuvem)
   }
@@ -214,7 +214,7 @@ function gerarObstaculos(){
     trex.depth = trex.depth + 1;// de todas
     
     //tempo de vida para obstaculo
-    obstaculo.lifetime = width/30;
+    obstaculo.lifetime = width+30;
 
     grupoCactos.add(obstaculo)
   }

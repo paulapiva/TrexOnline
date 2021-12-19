@@ -8,12 +8,6 @@ var grupoNuvens, grupoCactos;
 var estadoJogo = "JOGAR"
 var reiniciar, restarImg, fimJogo, gameOver;
 
-/* várias maneiras de fazer
-var JOGAR = 1;
-var ENCERRAR = 0;
-var estadoJogo = JOGAR;
-*/
-
 function preload(){
   
   trexCorrendo = loadAnimation("trex1.png", "trex3.png", "trex4.png");

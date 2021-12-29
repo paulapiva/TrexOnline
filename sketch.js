@@ -69,8 +69,8 @@ function setup(){
   grupoCactos = new Group();
   
   trex.debug = false
-  //trex.setCollider("circle",0,0,40);
-  trex.setCollider("rectangle", 60,0,100,250,90);
+  trex.setCollider("circle",0,0,40);
+  //trex.setCollider("rectangle", 60,0,100,250,90);
   //setCollider(type, xOffset, yOffset, width/radius, height, rotationOffset)
 
 }

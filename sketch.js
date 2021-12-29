@@ -145,10 +145,11 @@ function draw(){
     grupoCactos.setLifetimeEach(-1);
     grupoNuvens.setLifetimeEach(-1);
 
-     //Resetar o jogo
-     if(mousePressedOver(reiniciar)){
+      //Resetar o jogo
+     if(touches.length>0 || mousePressedOver(reiniciar)){
       console.log("reiniciar o jogo")
       reset();
+      touches = []
     }
   }
   drawSprites();
@@ -178,7 +179,7 @@ function gerarNuvens(){
     trex.depth++
 
     //tempo de vida para nuvens
-    nuvem.lifetime = width/30;
+    nuvem.lifetime = 300;
 
     grupoNuvens.add(nuvem)
   }
@@ -214,7 +215,7 @@ function gerarObstaculos(){
     trex.depth = trex.depth + 1;// de todas
     
     //tempo de vida para obstaculo
-    obstaculo.lifetime = width/30;
+    obstaculo.lifetime = 300;
 
     grupoCactos.add(obstaculo)
   }

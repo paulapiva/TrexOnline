@@ -44,7 +44,7 @@ function setup(){
   //criação chão
   solo = createSprite(200,height-10,width,20);
   solo.addImage("solo",soloImagem)
-
+  solo.x = solo.width/2;
   //chão Invisivel
   soloInvisivel = createSprite(100, height-2,width,20);
   soloInvisivel.visible = false
@@ -69,8 +69,8 @@ function setup(){
   grupoCactos = new Group();
   
   trex.debug = false
-  trex.setCollider("circle",0,0,40);
-  //trex.setCollider("rectangle", 60,0,100,250,90);
+  //trex.setCollider("circle",0,0,40);
+  trex.setCollider("rectangle", 60,0,100,250,90);
   //setCollider(type, xOffset, yOffset, width/radius, height, rotationOffset)
 
 }
@@ -82,22 +82,25 @@ function draw(){
 
   text("Pontuação: "+ pontuacao, width-150,15);
 
-  //som do checkpoint 
-  if(pontuacao >0 && pontuacao %100 === 0){
-    somCheck.play();
-  }
+  
   //colisao com chão
   trex.collide(soloInvisivel)
-  console.log("estado do jogo: ", estadoJogo)
+  
 
-  drawSprites();
+  
   
   //usados no JOGAR
   if(estadoJogo === "JOGAR"){
-    
+    //Movimento do solo
+    solo.velocityX = -(4+3*pontuacao/100);
+
     //Inseir pontução na tela
     pontuacao = pontuacao + Math.round(getFrameRate()/60);
 
+    //som do checkpoint 
+    if(pontuacao >0 && pontuacao %100 === 0){
+      somCheck.play();
+    }
     //Pulo do Trex
     if(touches.length > 0 || keyDown("space")&& trex.y >= height-100) {
       trex.velocityY = -10;
@@ -106,9 +109,6 @@ function draw(){
     }
     //gravidade
     trex.velocityY = trex.velocityY +0.8;
-
-    //Movimento do solo
-    solo.velocityX = -(4+3*pontuacao/100);
 
     if(solo.x<0){
       solo.x = solo.width/2;
@@ -119,7 +119,7 @@ function draw(){
     gerarObstaculos();
 
     //condição de mudança de estado do jogo
-    if(trex.isTouching(grupoCactos)){
+    if(grupoCactos.isTouching(trex)){
       //trex.velocityY = -12;
       estadoJogo = "ENCERRAR"
       //som da morte
@@ -151,7 +151,7 @@ function draw(){
       reset();
     }
   }
-  
+  drawSprites();
 }
 
 //funções
@@ -178,7 +178,7 @@ function gerarNuvens(){
     trex.depth++
 
     //tempo de vida para nuvens
-    nuvem.lifetime = width+30;
+    nuvem.lifetime = width/30;
 
     grupoNuvens.add(nuvem)
   }
@@ -214,7 +214,7 @@ function gerarObstaculos(){
     trex.depth = trex.depth + 1;// de todas
     
     //tempo de vida para obstaculo
-    obstaculo.lifetime = width+30;
+    obstaculo.lifetime = width/30;
 
     grupoCactos.add(obstaculo)
   }

@@ -32,21 +32,21 @@ function preload(){
 }
 
 function setup(){
-  createCanvas(windowWidth,200)
+  createCanvas(windowWidth, windowHeight)
   
   //crie um sprite de trex
-  trex = createSprite(width/20,height-110,30,50);
+  trex = createSprite(50,height-110,30,50);
   trex.addAnimation("running", trexCorrendo);
   trex.addImage("collided" , trex_colidiu);
   trex.scale = 0.5
   trex.x = 40;
  
   //criação chão
-  solo = createSprite(200,height-10,width,20);
+  solo = createSprite(width/2,height-10,width,20);
   solo.addImage("solo",soloImagem)
-  solo.x = solo.width/2;
+  //solo.x = solo.width/2;
   //chão Invisivel
-  soloInvisivel = createSprite(100, height-2,width,20);
+  soloInvisivel = createSprite(width/2, height-2,width,20);
   soloInvisivel.visible = false
 
   //criar fim do jogo
@@ -92,7 +92,7 @@ function draw(){
   //usados no JOGAR
   if(estadoJogo === "JOGAR"){
     //Movimento do solo
-    solo.velocityX = -(4+3*pontuacao/100);
+    solo.velocityX = -(5+3*pontuacao/100);
 
     //Inseir pontução na tela
     pontuacao = pontuacao + Math.round(getFrameRate()/60);
@@ -145,7 +145,7 @@ function draw(){
     grupoCactos.setLifetimeEach(-1);
     grupoNuvens.setLifetimeEach(-1);
 
-      //Resetar o jogo
+     //Resetar o jogo
      if(touches.length>0 || mousePressedOver(reiniciar)){
       console.log("reiniciar o jogo")
       reset();
@@ -170,9 +170,9 @@ function reset(){
 
 function gerarNuvens(){
   if(frameCount % 60 === 0) {
-    nuvem = createSprite(width-50,100,40,10);
+    nuvem = createSprite(width-50,height-300,40,10);
     nuvem.addImage("Muven",imagemdanuvem);
-    nuvem.y = Math.round(random(10,100));
+    nuvem.y = Math.round(random(10,200));
     nuvem.scale = 0.5;
     nuvem.velocityX = -3;
     nuvem.depth = trex.depth
@@ -190,7 +190,7 @@ function gerarObstaculos(){
   //gerar obstaculos a cada 60 quadros
   if (frameCount % 60 === 0){
    var obstaculo = createSprite(width-50,height-25,10,40);
-   obstaculo.velocityX = -(6+pontuacao/100);
+   obstaculo.velocityX = -(6+3*pontuacao/100);
    obstaculo.scale = 0.5;
     //gerar obstaculos aleatoriamente
     var rand = Math.round(random(1,6));
